@@ -130,7 +130,7 @@ st.pyplot(fig)
 st.dataframe(avg_total_bill)
 
 
-###
+### Advanced selection for the task 3.
 with st.container():
     # 1. Include all categorical features (multiselect)
     # 2. Bar, Area, line charts selection (selectbox)
@@ -164,19 +164,26 @@ with st.container():
         for i in range(n_features-1):
             avg_total_bill = avg_total_bill.unstack()
     
-    
+    avg_total_bill.fillna(0,inplace=True)
 
     # Visuals
 
     fig, ax = plt.subplots()
     avg_total_bill.plot(kind=chart_type, ax=ax, stacked = stacked)
     ax.legend(loc="center left",bbox_to_anchor=(1.0,0.5))
+    ax.set_ylabel("Avg Total Bill")
     st.pyplot(fig)
 
     with st.expander("Click here to display values"):
         st.dataframe(avg_total_bill)
 
+# 4.Find the relation between total_bill and tip on time (scatter plot)
 
+st.markdown("---")
+st.write("4.Find the relation between total_bill and tip on time (scatter plot)")
 
+fig, ax = plt.subplots()
+hue_type = st.selectbox("Select the feature to hue", cat_cols)
 
-
+sns.scatterplot(data=df, x="total_bill", y="tip", hue=hue_type, ax=ax)
+st.pyplot(fig)

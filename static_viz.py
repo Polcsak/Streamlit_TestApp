@@ -105,6 +105,9 @@ with st.container():
 
     st.pyplot(fig)
 
+# 3. Find distribution of average total_bill across each day by male and female
+## Bar, Area, line
+
 st.markdown("---")
 st.write("3. Find distribution of average total_bill across each day by male and female")
 
@@ -113,10 +116,67 @@ feature = ["total_bill"]
 selected_cols = feature + features_to_groupby
 
 avg_total_bill = df[selected_cols].groupby(features_to_groupby).mean()
+avg_total_bill = avg_total_bill.unstack()
 # avg_total_bill_V2 = df.groupby(features_to_groupby)[feature].mean()
 
+# Visuals
+
+fig, ax = plt.subplots()
+avg_total_bill.plot(kind="bar", ax=ax)
+ax.legend(loc="center left",bbox_to_anchor=(1.0,0.5))
+st.pyplot(fig)
+
 # st.dataframe(avg_total_bill_V2)
-# st.dataframe(avg_total_bill)
+st.dataframe(avg_total_bill)
+
+
+###
+with st.container():
+    # 1. Include all categorical features (multiselect)
+    # 2. Bar, Area, line charts selection (selectbox)
+    # 3. Stacked / Unstacked charts (radio button)
+
+    c1,c2,c3 = st.columns(3)
+    with c1:
+        group_cols = st.multiselect("Select the features",cat_cols, cat_cols[0])
+        features_to_groupby = group_cols
+        n_features = len(features_to_groupby)
+    
+    with c2:
+        chart_type = st.selectbox("Select Chart Type",
+                                  ("bar","area","line"))
+    
+    with c3:
+        stack_option = st.radio("Stacked",
+                                ("Yes","No"))
+        if stack_option == "Yes":
+            stacked = True
+        else:
+            stacked = False
+
+    
+    feature = ["total_bill"]
+    selected_cols = feature + features_to_groupby
+
+    avg_total_bill = df[selected_cols].groupby(features_to_groupby).mean()
+    
+    if n_features > 1:
+        for i in range(n_features-1):
+            avg_total_bill = avg_total_bill.unstack()
+    
+    
+
+    # Visuals
+
+    fig, ax = plt.subplots()
+    avg_total_bill.plot(kind=chart_type, ax=ax, stacked = stacked)
+    ax.legend(loc="center left",bbox_to_anchor=(1.0,0.5))
+    st.pyplot(fig)
+
+    with st.expander("Click here to display values"):
+        st.dataframe(avg_total_bill)
+
+
 
 
 
